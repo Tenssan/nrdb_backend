@@ -18,14 +18,16 @@ export class UserService {
     return await this.userModel.findById(id).exec();
   }
 
-  async validateUser(username: string, pass: string): Promise<User | null> {
+  async validateUser(username: string, pass: string): Promise<boolean> {
     const user = await this.userModel.findOne({ username }).exec();
     if (user && user.password === pass) {
-      ///////////CAMBIAR THIS/////
-      return user;
+      
+      return true;
     }
-    return null;
+    
+    return false;
   }
+  
 
   
   

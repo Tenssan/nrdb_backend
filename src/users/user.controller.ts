@@ -22,14 +22,15 @@ export class UserController {
     return this.usersService.findOne(id);
   }
   @Post('login')
-    async login(@Body() loginUserDto: LoginUserDto): Promise<User | { error: string }> {
+  async login(@Body() loginUserDto: LoginUserDto): Promise<boolean | { error: string }> {
     const user = await this.usersService.validateUser(loginUserDto.username, loginUserDto.password);
     if (!user) {
-        return { error: 'Credenciales inválidas' };
+      return false;
     }
-    return user;
-}
-
+  
+    return true;
+  }
+  
 
 
 
