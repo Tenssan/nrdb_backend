@@ -21,6 +21,7 @@ export class UserService {
   async validateUser(username: string, pass: string): Promise<User | null> {
     const user = await this.userModel.findOne({ username }).exec();
     if (user && user.password === pass) {
+      ///////////CAMBIAR THIS/////
       return user;
     }
     return null;
