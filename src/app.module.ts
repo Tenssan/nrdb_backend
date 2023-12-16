@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServerApiVersion } from 'mongodb';
 import { ProductsModule } from './products/products.module';
+import { UserModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ProductsModule } from './products/products.module';
       //serverApi: ServerApiVersion.v1,
     }),
     ProductsModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
