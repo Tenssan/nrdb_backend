@@ -43,14 +43,51 @@ export class Neo4jService implements OnModuleInit {
     }
   }
 
-  async createProduct(productId: string, productName: string, category: string) {
+  async createProduct(
+    productId: string, 
+    productName: string, 
+    description: string, 
+    price: number, 
+    brand: string, 
+    inStock: boolean, 
+    sizeAvailable: string[], 
+    image: string, 
+    reviews: string[], 
+    category: string 
+  ) {
     const session = this.driver.session();
     try {
-      await session.run(`CREATE (p:Product {id: $productId, name: $productName, category: $category})`, { productId, productName, category });
+      await session.run(`
+        CREATE (p:Product {
+          id: $productId, 
+          name: $productName, 
+          description: $description, 
+          price: $price, 
+          brand: $brand, 
+          inStock: $inStock, 
+          sizeAvailable: $sizeAvailable, 
+          image: $image, 
+          reviews: $reviews, 
+          category: $category
+        })`, 
+        { 
+          productId, 
+          productName, 
+          description, 
+          price, 
+          brand, 
+          inStock, 
+          sizeAvailable, 
+          image, 
+          reviews, 
+          category 
+        }
+      );
     } finally {
       await session.close();
     }
   }
+  
 
   async recordClick(userId: string, productId: string) {
     const session = this.driver.session();
@@ -90,7 +127,106 @@ export class Neo4jService implements OnModuleInit {
     } finally {
       await session.close();
     }
+    
+    
   }
+
+  async recommendLaptopFurnitures(userId: string): Promise<any[]> {
+    const session = this.driver.session();
+  try {
+    const result = await session.run(`
+    
+      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
+      WHERE p.category = 'Electronics' AND p.name CONTAINS 'Laptop'
+      WITH u, COUNT(p) > 0 AS clickedLaptop
+
+      
+      MATCH (product:Product)
+      WHERE clickedLaptop AND product.category = 'Furniture'
+      RETURN DISTINCT product
+    `, 
+    { userId });
+
+    console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
+    return result.records.map(record => record.get('product').properties);
+  } finally {
+    await session.close();
+  }
+}
+async recommendClothesProducts(userId: string): Promise<any[]> {
+  const session = this.driver.session();
+  try {
+      const result = await session.run(`
+         
+          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
+          WHERE p.category = 'Clothes'
+          WITH u, COUNT(p) > 0 AS clickedClothes
+
+         
+          MATCH (product:Product)
+          WHERE clickedClothes AND product.category = 'Clothes'
+          RETURN DISTINCT product
+      `, 
+      { userId });
+
+      console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
+      return result.records.map(record => record.get('product').properties);
+  } finally {
+      await session.close();
+  }
+}
+
+async recommendElectronicsProducts(userId: string): Promise<any[]> {
+  const session = this.driver.session();
+  try {
+      const result = await session.run(`
+         
+          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
+          WHERE p.category = 'Electronics'
+          WITH u, COUNT(p) > 0 AS clickedElectronics
+
+         
+          MATCH (product:Product)
+          WHERE clickedElectronics AND product.category = 'Electronics'
+          RETURN DISTINCT product
+      `, 
+      { userId });
+
+      console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
+      return result.records.map(record => record.get('product').properties);
+  } finally {
+      await session.close();
+  }
+}
+async recommendFurnitureProducts(userId: string): Promise<any[]> {
+  const session = this.driver.session();
+  try {
+      const result = await session.run(`
+         
+          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
+          WHERE p.category = 'Furniture'
+          WITH u, COUNT(p) > 0 AS clickedFurniture
+
+        
+          MATCH (product:Product)
+          WHERE clickedFurniture AND product.category = 'Furniture'
+          RETURN DISTINCT product
+      `, 
+      { userId });
+
+      console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
+      return result.records.map(record => record.get('product').properties);
+  } finally {
+      await session.close();
+  }
+}
+
+
+
+
+  
+  }
+  
   
   
   
@@ -102,4 +238,4 @@ export class Neo4jService implements OnModuleInit {
   
 
   
-}
+

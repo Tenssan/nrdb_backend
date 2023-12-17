@@ -105,6 +105,23 @@ var ProductsService = /** @class */ (function () {
             });
         });
     };
+    ProductsService.prototype.deleteAll = function () {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.productModel.deleteMany({}).exec()];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    ProductsService.prototype.findAllIdAndCategory = function () {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.productModel.find({}, 'Category').exec()];
+            });
+        });
+    };
     ProductsService = __decorate([
         common_1.Injectable(),
         __param(0, mongoose_1.InjectModel('Product'))

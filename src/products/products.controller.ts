@@ -36,5 +36,9 @@ async findAllIdAndCategory() {
   async delete(@Param('id') id: string) {
     return this.productsService.delete(id);
   }
+  @Delete()
+  async deleteAll(): Promise<any> {
+    return this.productsService.deleteAll();
+  }
 
 }

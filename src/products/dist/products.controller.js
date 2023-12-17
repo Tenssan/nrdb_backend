@@ -65,6 +65,13 @@ var ProductsController = /** @class */ (function () {
             });
         });
     };
+    ProductsController.prototype.findAllIdAndCategory = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.productsService.findAllIdAndCategory()];
+            });
+        });
+    };
     ProductsController.prototype.findOne = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -86,13 +93,23 @@ var ProductsController = /** @class */ (function () {
             });
         });
     };
+    ProductsController.prototype.deleteAll = function () {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.productsService.deleteAll()];
+            });
+        });
+    };
     __decorate([
-        common_1.Post(),
+        common_1.Post('createProduct'),
         __param(0, common_1.Body())
     ], ProductsController.prototype, "create");
     __decorate([
-        common_1.Get()
+        common_1.Get('showAllProducts')
     ], ProductsController.prototype, "findAll");
+    __decorate([
+        common_1.Get('showIdAndCategory')
+    ], ProductsController.prototype, "findAllIdAndCategory");
     __decorate([
         common_1.Get(':id'),
         __param(0, common_1.Param('id'))
@@ -105,6 +122,9 @@ var ProductsController = /** @class */ (function () {
         common_1.Delete(':id'),
         __param(0, common_1.Param('id'))
     ], ProductsController.prototype, "delete");
+    __decorate([
+        common_1.Delete()
+    ], ProductsController.prototype, "deleteAll");
     ProductsController = __decorate([
         common_1.Controller('products')
     ], ProductsController);

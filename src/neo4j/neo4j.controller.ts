@@ -12,8 +12,20 @@ export class Neo4jController {
 
   @Post('createProduct')
   async createProduct(@Body() body) {
-    return this.neo4jService.createProduct(body.productId, body.productName, body.category);
+    return this.neo4jService.createProduct(
+      body.productId, 
+      body.productName, 
+      body.description, 
+      body.price, 
+      body.brand, 
+      body.inStock, 
+      body.sizeAvailable, 
+      body.image, 
+      body.reviews, 
+      body.category
+    );
   }
+  
 
   @Post('recordClick')
   async recordClick(@Body() body) {
@@ -22,6 +34,22 @@ export class Neo4jController {
   @Post('recommendProducts')
   async recommendProducts(@Body('userId') userId: string): Promise<any[]> {
     return this.neo4jService.recommendProducts(userId);
+  }
+  @Post('recommendLaptopFurnitures')
+  async recommendLaptopFurnitures(@Body('userId') userId: string): Promise<any[]> {
+    return this.neo4jService.recommendLaptopFurnitures(userId);
+  }
+  @Post('recommendProductsClothes')
+  asyncrecommendProductsClothes(@Body('userId') userId: string): Promise<any[]> {
+    return this.neo4jService.recommendClothesProducts(userId);
+  }
+  @Post('recommendElectronicsProducts')
+  asynrecommendElectronicsProducts(@Body('userId') userId: string): Promise<any[]> {
+    return this.neo4jService.recommendElectronicsProducts(userId);
+  }
+  @Post('recommendFurnitureProducts')
+  asynrecommendFurnitureProducts(@Body('userId') userId: string): Promise<any[]> {
+    return this.neo4jService.recommendFurnitureProducts(userId);
   }
  
 }

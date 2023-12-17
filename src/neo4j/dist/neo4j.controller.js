@@ -61,7 +61,7 @@ var Neo4jController = /** @class */ (function () {
     Neo4jController.prototype.createProduct = function (body) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.neo4jService.createProduct(body.productId, body.productName, body.category)];
+                return [2 /*return*/, this.neo4jService.createProduct(body.productId, body.productName, body.description, body.price, body.brand, body.inStock, body.sizeAvailable, body.image, body.reviews, body.category)];
             });
         });
     };
@@ -79,6 +79,22 @@ var Neo4jController = /** @class */ (function () {
             });
         });
     };
+    Neo4jController.prototype.recommendLaptopFurnitures = function (userId) {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.neo4jService.recommendLaptopFurnitures(userId)];
+            });
+        });
+    };
+    Neo4jController.prototype.asyncrecommendProductsClothes = function (userId) {
+        return this.neo4jService.recommendClothesProducts(userId);
+    };
+    Neo4jController.prototype.asynrecommendElectronicsProducts = function (userId) {
+        return this.neo4jService.recommendElectronicsProducts(userId);
+    };
+    Neo4jController.prototype.asynrecommendFurnitureProducts = function (userId) {
+        return this.neo4jService.recommendFurnitureProducts(userId);
+    };
     __decorate([
         common_1.Post('createUser'),
         __param(0, common_1.Body())
@@ -95,6 +111,22 @@ var Neo4jController = /** @class */ (function () {
         common_1.Post('recommendProducts'),
         __param(0, common_1.Body('userId'))
     ], Neo4jController.prototype, "recommendProducts");
+    __decorate([
+        common_1.Post('recommendLaptopFurnitures'),
+        __param(0, common_1.Body('userId'))
+    ], Neo4jController.prototype, "recommendLaptopFurnitures");
+    __decorate([
+        common_1.Post('recommendProductsClothes'),
+        __param(0, common_1.Body('userId'))
+    ], Neo4jController.prototype, "asyncrecommendProductsClothes");
+    __decorate([
+        common_1.Post('recommendElectronicsProducts'),
+        __param(0, common_1.Body('userId'))
+    ], Neo4jController.prototype, "asynrecommendElectronicsProducts");
+    __decorate([
+        common_1.Post('recommendFurnitureProducts'),
+        __param(0, common_1.Body('userId'))
+    ], Neo4jController.prototype, "asynrecommendFurnitureProducts");
     Neo4jController = __decorate([
         common_1.Controller('neo4j')
     ], Neo4jController);
