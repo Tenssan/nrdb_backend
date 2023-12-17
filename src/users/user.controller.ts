@@ -41,4 +41,5 @@ export class UserController {
       return { error: 'No se encontró ningún usuario con el correo proporcionado.' };
     }
   }
+  
 }

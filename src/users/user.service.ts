@@ -27,12 +27,13 @@ export class UserService {
   async validateUser(username: string, pass: string): Promise<boolean> {
     const user = await this.userModel.findOne({ username }).exec();
     if (user && user.password === pass) {
-      // User validation successful
+      
       return true;
     }
-    // User validation failed
+    
     return false;
   }
+  
 };
   
 
