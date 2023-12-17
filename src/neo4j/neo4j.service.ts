@@ -63,22 +63,43 @@ export class Neo4jService implements OnModuleInit {
       await session.close();
     }
   }
-
   async recommendProducts(userId: string): Promise<any[]> {
+    console.log(`UserID: ${userId}`);
     const session = this.driver.session();
     try {
       const result = await session.run(`
+       
         MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
-        WITH p.category AS category
-        MATCH (recommended:Product)
-        WHERE recommended.category = category AND NOT (u)-[:CLICKED_ON]->(recommended)
-        RETURN recommended
-      `, { userId });
-      return result.records.map(record => record.get('recommended').properties);
+        WITH u, COLLECT(DISTINCT p.category) AS clickedCategories
+       
+        MATCH (product:Product)
+        WHERE product.category IN clickedCategories AND NOT EXISTS ((u)-[:CLICKED_ON]->(product))
+        RETURN DISTINCT product
+        
+        
+      `, 
+      { userId });
+      
+
+      
+  
+      console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
+      return result.records.map(record => record.get('product').properties);
+      
+      
     } finally {
       await session.close();
     }
   }
+  
+  
+  
+  
+  
+  
+ 
+  
+  
 
   
 }

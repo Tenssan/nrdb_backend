@@ -8,15 +8,19 @@ import { Product } from './interface/product.interface';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post()
+  @Post('createProduct')
   async create(@Body() createProductDto: CreateProductDto): Promise<Product> {
     return this.productsService.create(createProductDto);
   }
 
-  @Get()
+  @Get('showAllProducts')
   async findAll() {
     return this.productsService.findAll();
   }
+  @Get('showIdAndCategory')
+async findAllIdAndCategory() {
+  return this.productsService.findAllIdAndCategory();
+}
 
   @Get(':id')
   async findOne(@Param('id') id: string) {

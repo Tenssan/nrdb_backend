@@ -19,9 +19,9 @@ export class UserService {
     return await this.userModel.findById(id).exec();
   }
 
-  async findUsernameByEmail(email: string): Promise<string> {
+  async findUsernameByEmail(email: string) {
     const user = await this.userModel.findOne({ email }).exec();
-    return user.name
+    return user;
   }
 
   async validateUser(username: string, pass: string): Promise<boolean> {

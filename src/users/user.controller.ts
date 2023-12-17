@@ -31,7 +31,7 @@ export class UserController {
   }
 
   @Post('getDataUser')
-  async getDataUser(@Body() getDataUserDto: getDataUserDto): Promise<{ username: string } | { error: string }> {
+  async getDataUser(@Body() getDataUserDto: getDataUserDto)  {
     const { email } = getDataUserDto;
     const username = await this.usersService.findUsernameByEmail(email);
 
