@@ -15,6 +15,10 @@ export class UserService {
     return await createdUser.save();
   }
 
+  async findAll(): Promise<User[]> {
+    return await this.userModel.find().exec();
+  }
+
   async findOne(id: string): Promise<User> {
     return await this.userModel.findById(id).exec();
   }
