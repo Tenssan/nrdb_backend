@@ -155,23 +155,27 @@ var Neo4jService = /** @class */ (function () {
     };
     Neo4jService.prototype.recordClick = function (userId, productId) {
         return __awaiter(this, void 0, void 0, function () {
-            var session;
+            var session, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         session = this.driver.session();
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, , 3, 5]);
-                        return [4 /*yield*/, session.run("\n        MATCH (u:User {id: $userId}), (p:Product {id: $productId})\n        CREATE (u)-[:CLICKED_ON]->(p)\n      ", { userId: userId, productId: productId })];
+                        _a.trys.push([1, 3, 4, 6]);
+                        return [4 /*yield*/, session.run("\n      MATCH (u:User {id: $userId}), (p:Product {id: $productId})\n      CREATE (u)-[:CLICKED_ON]->(p)\n    ", { userId: userId, productId: productId })];
                     case 2:
                         _a.sent();
-                        return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, session.close()];
-                    case 4:
+                        return [2 /*return*/, true];
+                    case 3:
+                        error_2 = _a.sent();
+                        console.error(error_2);
+                        return [2 /*return*/, false];
+                    case 4: return [4 /*yield*/, session.close()];
+                    case 5:
                         _a.sent();
                         return [7 /*endfinally*/];
-                    case 5: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });

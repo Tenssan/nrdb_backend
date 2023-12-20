@@ -88,18 +88,22 @@ export class Neo4jService implements OnModuleInit {
     }
   }
   
-
-  async recordClick(userId: string, productId: string) {
-    const session = this.driver.session();
-    try {
-      await session.run(`
-        MATCH (u:User {id: $userId}), (p:Product {id: $productId})
-        CREATE (u)-[:CLICKED_ON]->(p)
-      `, { userId, productId });
-    } finally {
-      await session.close();
-    }
+async recordClick(userId: string, productId: string) {
+  const session = this.driver.session();
+  try {
+    await session.run(`
+      MATCH (u:User {id: $userId}), (p:Product {id: $productId})
+      CREATE (u)-[:CLICKED_ON]->(p)
+    `, { userId, productId });
+    return true; 
+  } catch (error) {
+    console.error(error); 
+    return false; 
+  } finally {
+    await session.close();
   }
+}
+
   async recommendProducts(userId: string): Promise<any[]> {
     console.log(`UserID: ${userId}`);
     const session = this.driver.session();
