@@ -18,9 +18,9 @@ export class ProductsController {
     return this.productsService.findAll();
   }
   @Get('showIdAndCategory')
-async findAllIdAndCategory() {
-  return this.productsService.findAllIdAndCategory();
-}
+  async findAllIdAndCategory() {
+    return this.productsService.findAllIdAndCategory();
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {

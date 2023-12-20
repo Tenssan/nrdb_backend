@@ -28,14 +28,13 @@ export class UserService {
     return user;
   }
 
-  async validateUser(username: string, pass: string): Promise<boolean> {
-    const user = await this.userModel.findOne({ username }).exec();
-    if (user && user.password === pass) {
-      
-      return true;
+  async validateUser(name: string, password: string): Promise<boolean> {
+    const user = await this.userModel.findOne({ name }).exec();
+    if (user && user.password === password) {
+      return user._id;
     }
     
-    return false;
+    return null;
   }
   
 };

@@ -28,11 +28,10 @@ export class UserController {
   @Post('login')
   async login(@Body() loginUserDto: LoginUserDto): Promise<boolean | { error: string }> {
     const user = await this.usersService.validateUser(loginUserDto.username, loginUserDto.password);
-    if (!user) {
-      return false;
+    if (user == null) {
+      return null;
     }
-
-    return true;
+    return user;
   }
 
   @Post('getDataUser')
