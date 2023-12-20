@@ -168,14 +168,13 @@ async recommendClothesProducts(userId: string): Promise<any[]> {
   try {
       const result = await session.run(`
          
-          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
-          WHERE p.category = 'Clothes'
-          WITH u, COUNT(p) > 0 AS clickedClothes
-
-         
-          MATCH (product:Product)
-          WHERE clickedClothes AND product.category = 'Clothes'
-          RETURN DISTINCT product
+      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)
+      WHERE clickedProduct.category = 'Clothes'
+      WITH u, collect(clickedProduct.id) AS clickedProductIds
+      
+      MATCH (product:Product)
+      WHERE product.category = 'Clothes' AND NOT product.id IN clickedProductIds
+      RETURN DISTINCT product
       `, 
       { userId });
 
@@ -191,14 +190,14 @@ async recommendElectronicsProducts(userId: string): Promise<any[]> {
   try {
       const result = await session.run(`
          
-          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
-          WHERE p.category = 'Electronics'
-          WITH u, COUNT(p) > 0 AS clickedElectronics
-
-         
-          MATCH (product:Product)
-          WHERE clickedElectronics AND product.category = 'Electronics'
-          RETURN DISTINCT product
+      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)
+      WHERE clickedProduct.category = 'Electronics'
+      WITH u, collect(clickedProduct.id) AS clickedProductIds
+      
+      MATCH (product:Product)
+      WHERE product.category = 'Electronics' AND NOT product.id IN clickedProductIds
+      RETURN DISTINCT product
+      
       `, 
       { userId });
 
@@ -213,14 +212,13 @@ async recommendFurnitureProducts(userId: string): Promise<any[]> {
   try {
       const result = await session.run(`
          
-          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
-          WHERE p.category = 'Furniture'
-          WITH u, COUNT(p) > 0 AS clickedFurniture
-
-        
-          MATCH (product:Product)
-          WHERE clickedFurniture AND product.category = 'Furniture'
-          RETURN DISTINCT product
+      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)
+      WHERE clickedProduct.category = 'Furniture'
+      WITH u, collect(clickedProduct.id) AS clickedProductIds
+      
+      MATCH (product:Product)
+      WHERE product.category = 'Furniture' AND NOT product.id IN clickedProductIds
+      RETURN DISTINCT product
       `, 
       { userId });
 
