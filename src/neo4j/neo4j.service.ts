@@ -104,36 +104,42 @@ async recordClick(userId: string, productId: string) {
   }
 }
 
-  async recommendProducts(userId: string): Promise<any[]> {
-    console.log(`UserID: ${userId}`);
-    const session = this.driver.session();
-    try {
-      const result = await session.run(`
-       
-        MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
-        WITH u, COLLECT(DISTINCT p.category) AS clickedCategories
-       
-        MATCH (product:Product)
-        WHERE product.category IN clickedCategories AND NOT EXISTS ((u)-[:CLICKED_ON]->(product))
-        RETURN DISTINCT product
-        
-        
-      `, 
-      { userId });
+async recommendProducts(userId: string): Promise<any[]> {
+  console.log(`UserID: ${userId}`);
+  const session = this.driver.session();
+  try {
+    const result = await session.run(`
+    
       
+      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)
+      WITH u, p.category AS clickedCategory
+      // Cuenta los clics por categoría
+      RETURN clickedCategory, COUNT(*) AS clicks
+      ORDER BY clicks DESC
+    `, 
+    { userId });
 
-      
-  
-      console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
-      return result.records.map(record => record.get('product').properties);
-      
-      
-    } finally {
-      await session.close();
-    }
+   
+    const topCategories = result.records.map(record => record.get('clickedCategory'));
     
+    if (topCategories.length === 0) return [];
+
     
+    const recommendations = await session.run(`
+      MATCH (u:User {id: $userId}), (product:Product)
+      WHERE product.category IN $topCategories AND NOT EXISTS ((u)-[:CLICKED_ON]->(product))
+      RETURN DISTINCT product
+    `,
+    { userId, topCategories });
+
+    console.log(`Recommendations:`, recommendations.records.map(record => record.get('product').properties));
+    return recommendations.records.map(record => record.get('product').properties);
+    
+  } finally {
+    await session.close();
   }
+}
+
 
   async recommendLaptopFurnitures(userId: string): Promise<any[]> {
     const session = this.driver.session();

@@ -182,7 +182,7 @@ var Neo4jService = /** @class */ (function () {
     };
     Neo4jService.prototype.recommendProducts = function (userId) {
         return __awaiter(this, void 0, Promise, function () {
-            var session, result;
+            var session, result, topCategories, recommendations;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -190,17 +190,23 @@ var Neo4jService = /** @class */ (function () {
                         session = this.driver.session();
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, , 3, 5]);
-                        return [4 /*yield*/, session.run("\n       \n        MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)\n        WITH u, COLLECT(DISTINCT p.category) AS clickedCategories\n       \n        MATCH (product:Product)\n        WHERE product.category IN clickedCategories AND NOT EXISTS ((u)-[:CLICKED_ON]->(product))\n        RETURN DISTINCT product\n        \n        \n      ", { userId: userId })];
+                        _a.trys.push([1, , 4, 6]);
+                        return [4 /*yield*/, session.run("\n    \n      \n      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)\n      WITH u, p.category AS clickedCategory\n      // Cuenta los clics por categor\u00EDa\n      RETURN clickedCategory, COUNT(*) AS clicks\n      ORDER BY clicks DESC\n    ", { userId: userId })];
                     case 2:
                         result = _a.sent();
-                        console.log("Recommendations:", result.records.map(function (record) { return record.get('product').properties; }));
-                        return [2 /*return*/, result.records.map(function (record) { return record.get('product').properties; })];
-                    case 3: return [4 /*yield*/, session.close()];
-                    case 4:
+                        topCategories = result.records.map(function (record) { return record.get('clickedCategory'); });
+                        if (topCategories.length === 0)
+                            return [2 /*return*/, []];
+                        return [4 /*yield*/, session.run("\n      MATCH (u:User {id: $userId}), (product:Product)\n      WHERE product.category IN $topCategories AND NOT EXISTS ((u)-[:CLICKED_ON]->(product))\n      RETURN DISTINCT product\n    ", { userId: userId, topCategories: topCategories })];
+                    case 3:
+                        recommendations = _a.sent();
+                        console.log("Recommendations:", recommendations.records.map(function (record) { return record.get('product').properties; }));
+                        return [2 /*return*/, recommendations.records.map(function (record) { return record.get('product').properties; })];
+                    case 4: return [4 /*yield*/, session.close()];
+                    case 5:
                         _a.sent();
                         return [7 /*endfinally*/];
-                    case 5: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });

@@ -40,5 +40,9 @@ async findAllIdAndCategory() {
   async deleteAll(): Promise<any> {
     return this.productsService.deleteAll();
   }
+  @Get('category/:category')
+  async findAllByCategory(@Param('category') category: string) {
+    return this.productsService.findAllByCategory(category);
+  }
 
 }
