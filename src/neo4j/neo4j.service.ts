@@ -167,14 +167,9 @@ async recommendClothesProducts(userId: string): Promise<any[]> {
   const session = this.driver.session();
   try {
       const result = await session.run(`
-         
       MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)
       WHERE clickedProduct.category = 'Clothes'
-      WITH u, collect(clickedProduct.id) AS clickedProductIds
-      
-      MATCH (product:Product)
-      WHERE product.category = 'Clothes' AND NOT product.id IN clickedProductIds
-      RETURN DISTINCT product
+      RETURN DISTINCT clickedProduct
       `, 
       { userId });
 
@@ -192,38 +187,30 @@ async recommendElectronicsProducts(userId: string): Promise<any[]> {
          
       MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)
       WHERE clickedProduct.category = 'Electronics'
-      WITH u, collect(clickedProduct.id) AS clickedProductIds
-      
-      MATCH (product:Product)
-      WHERE product.category = 'Electronics' AND NOT product.id IN clickedProductIds
-      RETURN DISTINCT product
+      RETURN DISTINCT clickedProduct
       
       `, 
       { userId });
 
-      console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
-      return result.records.map(record => record.get('product').properties);
+      console.log(`Recommendations:`, result.records.map(record => record.get('clickedProduct').properties));
+      return result.records.map(record => record.get('clickedProduct').properties);
   } finally {
       await session.close();
   }
 }
+
 async recommendFurnitureProducts(userId: string): Promise<any[]> {
   const session = this.driver.session();
   try {
       const result = await session.run(`
-         
       MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)
       WHERE clickedProduct.category = 'Furniture'
-      WITH u, collect(clickedProduct.id) AS clickedProductIds
-      
-      MATCH (product:Product)
-      WHERE product.category = 'Furniture' AND NOT product.id IN clickedProductIds
-      RETURN DISTINCT product
+      RETURN DISTINCT clickedProduct
       `, 
       { userId });
 
-      console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
-      return result.records.map(record => record.get('product').properties);
+      console.log(`Recommendations:`, result.records.map(record => record.get('clickedProduct').properties));
+      return result.records.map(record => record.get('clickedProduct').properties);
   } finally {
       await session.close();
   }
