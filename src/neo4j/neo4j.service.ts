@@ -132,7 +132,7 @@ async recommendProducts(userId: string): Promise<any[]> {
     `,
     { userId, topCategories });
 
-    console.log(`Recommendations:`, recommendations.records.map(record => record.get('product').properties));
+    //console.log(`Recommendations:`, recommendations.records.map(record => record.get('product').properties));
     return recommendations.records.map(record => record.get('product').properties);
     
   } finally {
