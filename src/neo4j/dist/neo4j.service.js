@@ -307,34 +307,6 @@ var Neo4jService = /** @class */ (function () {
             });
         });
     };
-    Neo4jService.prototype.NoclicksProducts = function (userId, category) {
-        return __awaiter(this, void 0, Promise, function () {
-            var session, result, error_3;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        session = this.driver.session();
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, 4, 6]);
-                        return [4 /*yield*/, session.run("\n      MATCH (p:Product)\n      WHERE p.category = $category AND NOT (p)<-[:CLICKED_ON]-(:User {id: $userId})\n      RETURN DISTINCT p\n      ", { userId: userId, category: category })];
-                    case 2:
-                        result = _a.sent();
-                        console.log("Recommendations:", result.records.map(function (record) { return record.get('p').properties; }));
-                        return [2 /*return*/, result.records.map(function (record) { return record.get('p').properties; })];
-                    case 3:
-                        error_3 = _a.sent();
-                        console.error('Error al obtener recomendaciones:', error_3);
-                        throw error_3;
-                    case 4: return [4 /*yield*/, session.close()];
-                    case 5:
-                        _a.sent();
-                        return [7 /*endfinally*/];
-                    case 6: return [2 /*return*/];
-                }
-            });
-        });
-    };
     Neo4jService.prototype.recommendRandomNoClicked = function (userId) {
         return __awaiter(this, void 0, Promise, function () {
             var session, clickedProductsResult, clickedProductIds, unclickedProductsResult, unclickedProducts, recommendedProducts, i, randomIndex;
@@ -345,11 +317,11 @@ var Neo4jService = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, , 4, 6]);
-                        return [4 /*yield*/, session.run("\n      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)\n      WHERE clickedProduct.category = 'Clothes'\n      RETURN clickedProduct.id AS clickedProductId\n      ", { userId: userId })];
+                        return [4 /*yield*/, session.run("\n      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)\n      RETURN clickedProduct.id AS clickedProductId\n      ", { userId: userId })];
                     case 2:
                         clickedProductsResult = _a.sent();
                         clickedProductIds = clickedProductsResult.records.map(function (record) { return record.get('clickedProductId'); });
-                        return [4 /*yield*/, session.run("\n      MATCH (product:Product)\n      WHERE product.category = 'Clothes' AND NOT product.id IN $clickedProductIds\n      RETURN DISTINCT product\n      ", { clickedProductIds: clickedProductIds })];
+                        return [4 /*yield*/, session.run("\n      MATCH (product:Product)\n      WHERE NOT product.id IN $clickedProductIds\n      RETURN DISTINCT product\n      ", { clickedProductIds: clickedProductIds })];
                     case 3:
                         unclickedProductsResult = _a.sent();
                         unclickedProducts = unclickedProductsResult.records.map(function (record) { return record.get('product').properties; });
