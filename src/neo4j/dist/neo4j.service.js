@@ -248,8 +248,8 @@ var Neo4jService = /** @class */ (function () {
                         return [4 /*yield*/, session.run("\n      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)\n      WHERE clickedProduct.category = 'Clothes'\n      RETURN DISTINCT clickedProduct\n      ", { userId: userId })];
                     case 2:
                         result = _a.sent();
-                        console.log("Recommendations:", result.records.map(function (record) { return record.get('product').properties; }));
-                        return [2 /*return*/, result.records.map(function (record) { return record.get('product').properties; })];
+                        console.log("Recommendations:", result.records.map(function (record) { return record.get('clickedProduct').properties; }));
+                        return [2 /*return*/, result.records.map(function (record) { return record.get('clickedProduct').properties; })];
                     case 3: return [4 /*yield*/, session.close()];
                     case 4:
                         _a.sent();
