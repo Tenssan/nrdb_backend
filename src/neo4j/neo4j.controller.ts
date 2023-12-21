@@ -51,6 +51,7 @@ export class Neo4jController {
   asynrecommendFurnitureProducts(@Body('userId') userId: string): Promise<any[]> {
     return this.neo4jService.recommendFurnitureProducts(userId);
   }
+  
  
 }
 

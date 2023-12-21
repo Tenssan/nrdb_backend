@@ -122,6 +122,13 @@ var ProductsService = /** @class */ (function () {
             });
         });
     };
+    ProductsService.prototype.findAllByCategory = function (category) {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.productModel.find({ Category: category }).exec()];
+            });
+        });
+    };
     ProductsService = __decorate([
         common_1.Injectable(),
         __param(0, mongoose_1.InjectModel('Product'))

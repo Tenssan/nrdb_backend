@@ -100,6 +100,13 @@ var ProductsController = /** @class */ (function () {
             });
         });
     };
+    ProductsController.prototype.findAllByCategory = function (category) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.productsService.findAllByCategory(category)];
+            });
+        });
+    };
     __decorate([
         common_1.Post('createProduct'),
         __param(0, common_1.Body())
@@ -125,6 +132,10 @@ var ProductsController = /** @class */ (function () {
     __decorate([
         common_1.Delete()
     ], ProductsController.prototype, "deleteAll");
+    __decorate([
+        common_1.Get('category/:category'),
+        __param(0, common_1.Param('category'))
+    ], ProductsController.prototype, "findAllByCategory");
     ProductsController = __decorate([
         common_1.Controller('products')
     ], ProductsController);

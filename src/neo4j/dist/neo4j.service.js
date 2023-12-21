@@ -155,30 +155,34 @@ var Neo4jService = /** @class */ (function () {
     };
     Neo4jService.prototype.recordClick = function (userId, productId) {
         return __awaiter(this, void 0, void 0, function () {
-            var session;
+            var session, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         session = this.driver.session();
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, , 3, 5]);
-                        return [4 /*yield*/, session.run("\n        MATCH (u:User {id: $userId}), (p:Product {id: $productId})\n        CREATE (u)-[:CLICKED_ON]->(p)\n      ", { userId: userId, productId: productId })];
+                        _a.trys.push([1, 3, 4, 6]);
+                        return [4 /*yield*/, session.run("\n      MATCH (u:User {id: $userId}), (p:Product {id: $productId})\n      CREATE (u)-[:CLICKED_ON]->(p)\n    ", { userId: userId, productId: productId })];
                     case 2:
                         _a.sent();
-                        return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, session.close()];
-                    case 4:
+                        return [2 /*return*/, true];
+                    case 3:
+                        error_2 = _a.sent();
+                        console.error(error_2);
+                        return [2 /*return*/, false];
+                    case 4: return [4 /*yield*/, session.close()];
+                    case 5:
                         _a.sent();
                         return [7 /*endfinally*/];
-                    case 5: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });
     };
     Neo4jService.prototype.recommendProducts = function (userId) {
         return __awaiter(this, void 0, Promise, function () {
-            var session, result;
+            var session, result, topCategories, recommendations;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -186,17 +190,23 @@ var Neo4jService = /** @class */ (function () {
                         session = this.driver.session();
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, , 3, 5]);
-                        return [4 /*yield*/, session.run("\n       \n        MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)\n        WITH u, COLLECT(DISTINCT p.category) AS clickedCategories\n       \n        MATCH (product:Product)\n        WHERE product.category IN clickedCategories AND NOT EXISTS ((u)-[:CLICKED_ON]->(product))\n        RETURN DISTINCT product\n        \n        \n      ", { userId: userId })];
+                        _a.trys.push([1, , 4, 6]);
+                        return [4 /*yield*/, session.run("\n    \n      \n      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)\n      WITH u, p.category AS clickedCategory\n      // Cuenta los clics por categor\u00EDa\n      RETURN clickedCategory, COUNT(*) AS clicks\n      ORDER BY clicks DESC\n    ", { userId: userId })];
                     case 2:
                         result = _a.sent();
-                        console.log("Recommendations:", result.records.map(function (record) { return record.get('product').properties; }));
-                        return [2 /*return*/, result.records.map(function (record) { return record.get('product').properties; })];
-                    case 3: return [4 /*yield*/, session.close()];
-                    case 4:
+                        topCategories = result.records.map(function (record) { return record.get('clickedCategory'); });
+                        if (topCategories.length === 0)
+                            return [2 /*return*/, []];
+                        return [4 /*yield*/, session.run("\n      MATCH (u:User {id: $userId}), (product:Product)\n      WHERE product.category IN $topCategories AND NOT EXISTS ((u)-[:CLICKED_ON]->(product))\n      RETURN DISTINCT product\n    ", { userId: userId, topCategories: topCategories })];
+                    case 3:
+                        recommendations = _a.sent();
+                        console.log("Recommendations:", recommendations.records.map(function (record) { return record.get('product').properties; }));
+                        return [2 /*return*/, recommendations.records.map(function (record) { return record.get('product').properties; })];
+                    case 4: return [4 /*yield*/, session.close()];
+                    case 5:
                         _a.sent();
                         return [7 /*endfinally*/];
-                    case 5: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });
@@ -235,7 +245,7 @@ var Neo4jService = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, , 3, 5]);
-                        return [4 /*yield*/, session.run("\n         \n          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)\n          WHERE p.category = 'Clothes'\n          WITH u, COUNT(p) > 0 AS clickedClothes\n\n         \n          MATCH (product:Product)\n          WHERE clickedClothes AND product.category = 'Clothes'\n          RETURN DISTINCT product\n      ", { userId: userId })];
+                        return [4 /*yield*/, session.run("\n         \n      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)\n      WHERE clickedProduct.category = 'Clothes'\n      WITH u, collect(clickedProduct.id) AS clickedProductIds\n      \n      MATCH (product:Product)\n      WHERE product.category = 'Clothes' AND NOT product.id IN clickedProductIds\n      RETURN DISTINCT product\n      ", { userId: userId })];
                     case 2:
                         result = _a.sent();
                         console.log("Recommendations:", result.records.map(function (record) { return record.get('product').properties; }));
@@ -259,7 +269,7 @@ var Neo4jService = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, , 3, 5]);
-                        return [4 /*yield*/, session.run("\n         \n          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)\n          WHERE p.category = 'Electronics'\n          WITH u, COUNT(p) > 0 AS clickedElectronics\n\n         \n          MATCH (product:Product)\n          WHERE clickedElectronics AND product.category = 'Electronics'\n          RETURN DISTINCT product\n      ", { userId: userId })];
+                        return [4 /*yield*/, session.run("\n         \n      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)\n      WHERE clickedProduct.category = 'Electronics'\n      WITH u, collect(clickedProduct.id) AS clickedProductIds\n      \n      MATCH (product:Product)\n      WHERE product.category = 'Electronics' AND NOT product.id IN clickedProductIds\n      RETURN DISTINCT product\n      \n      ", { userId: userId })];
                     case 2:
                         result = _a.sent();
                         console.log("Recommendations:", result.records.map(function (record) { return record.get('product').properties; }));
@@ -283,7 +293,7 @@ var Neo4jService = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, , 3, 5]);
-                        return [4 /*yield*/, session.run("\n         \n          MATCH (u:User {id: $userId})-[:CLICKED_ON]->(p:Product)\n          WHERE p.category = 'Furniture'\n          WITH u, COUNT(p) > 0 AS clickedFurniture\n\n        \n          MATCH (product:Product)\n          WHERE clickedFurniture AND product.category = 'Furniture'\n          RETURN DISTINCT product\n      ", { userId: userId })];
+                        return [4 /*yield*/, session.run("\n         \n      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)\n      WHERE clickedProduct.category = 'Furniture'\n      WITH u, collect(clickedProduct.id) AS clickedProductIds\n      \n      MATCH (product:Product)\n      WHERE product.category = 'Furniture' AND NOT product.id IN clickedProductIds\n      RETURN DISTINCT product\n      ", { userId: userId })];
                     case 2:
                         result = _a.sent();
                         console.log("Recommendations:", result.records.map(function (record) { return record.get('product').properties; }));
