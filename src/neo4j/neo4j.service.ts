@@ -216,6 +216,67 @@ async recommendFurnitureProducts(userId: string): Promise<any[]> {
       await session.close();
   }
 }
+async NoclicksProducts(userId: string, category: string): Promise<any[]> {
+  const session = this.driver.session();
+  try {
+      const result = await session.run(`
+      MATCH (p:Product)
+      WHERE p.category = $category AND NOT (p)<-[:CLICKED_ON]-(:User {id: $userId})
+      RETURN DISTINCT p
+      `, 
+      { userId: userId, category: category }); 
+
+      console.log(`Recommendations:`, result.records.map(record => record.get('p').properties));
+      return result.records.map(record => record.get('p').properties);
+  } catch (error) {
+      console.error('Error al obtener recomendaciones:', error);
+      throw error;
+  } finally {
+      await session.close();
+  }
+}
+async recommendRandomNoClicked(userId: string): Promise<any[]> { // recomienda 3 productos clickqueados en el carrito
+  
+  const session = this.driver.session();
+  try {
+     
+      const clickedProductsResult = await session.run(`
+      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)
+      WHERE clickedProduct.category = 'Clothes'
+      RETURN clickedProduct.id AS clickedProductId
+      `, 
+      { userId });
+
+      const clickedProductIds = clickedProductsResult.records.map(record => record.get('clickedProductId'));
+
+     
+      const unclickedProductsResult = await session.run(`
+      MATCH (product:Product)
+      WHERE product.category = 'Clothes' AND NOT product.id IN $clickedProductIds
+      RETURN DISTINCT product
+      `, 
+      { clickedProductIds });
+
+      let unclickedProducts = unclickedProductsResult.records.map(record => record.get('product').properties);
+
+      
+      let recommendedProducts = [];
+      for (let i = 0; i < 3 && unclickedProducts.length > 0; i++) {
+          let randomIndex = Math.floor(Math.random() * unclickedProducts.length);
+          recommendedProducts.push(unclickedProducts[randomIndex]);
+          unclickedProducts.splice(randomIndex, 1); 
+      }
+
+      console.log(`Recommendations:`, recommendedProducts);
+      return recommendedProducts;
+      
+  } finally {
+      await session.close();
+  }
+}
+
+
+
 
 
 

@@ -44,5 +44,6 @@ async findAllIdAndCategory() {
   async findAllByCategory(@Param('category') category: string) {
     return this.productsService.findAllByCategory(category);
   }
+  
 
 }
