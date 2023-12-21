@@ -173,8 +173,9 @@ async recommendClothesProducts(userId: string): Promise<any[]> {
       `, 
       { userId });
 
-      console.log(`Recommendations:`, result.records.map(record => record.get('product').properties));
-      return result.records.map(record => record.get('product').properties);
+      console.log(`Recommendations:`, result.records.map(record => record.get('clickedProduct').properties));
+      return result.records.map(record => record.get('clickedProduct').properties);
+      
   } finally {
       await session.close();
   }
