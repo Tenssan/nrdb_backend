@@ -57,6 +57,11 @@ export class Neo4jController {
 asynrecommendRandomNoClicked(@Body('userId') userId: string): Promise<any[]> {
     return this.neo4jService.recommendRandomNoClicked(userId );
 }
+@Post('findProductsByCategoryOfProduct')
+asynfindProductsByCategoryOfProduct(@Body('productId') productId: string): Promise<any[]> {
+    return this.neo4jService.findProductsByCategoryOfProduct(productId );
+}
+
 
   
  

@@ -342,6 +342,41 @@ var Neo4jService = /** @class */ (function () {
             });
         });
     };
+    Neo4jService.prototype.findProductsByCategoryOfProduct = function (productId) {
+        return __awaiter(this, void 0, Promise, function () {
+            var session, categoryResult, category, productsResult, error_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        session = this.driver.session();
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, 5, 7]);
+                        return [4 /*yield*/, session.run("\n      MATCH (p:Product {id: $productId})\n      RETURN p.category AS category\n      ", { productId: productId })];
+                    case 2:
+                        categoryResult = _a.sent();
+                        if (categoryResult.records.length === 0) {
+                            console.log('Categoría del producto no encontrada.');
+                            return [2 /*return*/, []];
+                        }
+                        category = categoryResult.records[0].get('category');
+                        return [4 /*yield*/, session.run("\n      MATCH (p:Product)\n      WHERE p.category = $category AND p.id <> $productId\n      RETURN p\n      ", { productId: productId, category: category })];
+                    case 3:
+                        productsResult = _a.sent();
+                        return [2 /*return*/, productsResult.records.map(function (record) { return record.get('p').properties; })];
+                    case 4:
+                        error_3 = _a.sent();
+                        console.error('Error al obtener productos por categoría:', error_3);
+                        throw error_3;
+                    case 5: return [4 /*yield*/, session.close()];
+                    case 6:
+                        _a.sent();
+                        return [7 /*endfinally*/];
+                    case 7: return [2 /*return*/];
+                }
+            });
+        });
+    };
     Neo4jService = __decorate([
         common_1.Injectable()
     ], Neo4jService);

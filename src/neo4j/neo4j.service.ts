@@ -256,6 +256,41 @@ async recommendRandomNoClicked(userId: string): Promise<any[]> {
       await session.close();
   }
 }
+async findProductsByCategoryOfProduct(productId: string): Promise<any[]> {
+  const session = this.driver.session();
+  try {
+      
+      const categoryResult = await session.run(`
+      MATCH (p:Product {id: $productId})
+      RETURN p.category AS category
+      `, 
+      { productId });
+
+      
+      if (categoryResult.records.length === 0) {
+          console.log('Categoría del producto no encontrada.');
+          return [];
+      }
+      const category = categoryResult.records[0].get('category');
+
+      
+      const productsResult = await session.run(`
+      MATCH (p:Product)
+      WHERE p.category = $category AND p.id <> $productId
+      RETURN p
+      `, 
+      { productId, category });
+
+     
+      return productsResult.records.map(record => record.get('p').properties);
+  } catch (error) {
+      console.error('Error al obtener productos por categoría:', error);
+      throw error;
+  } finally {
+      await session.close();
+  }
+}
+
 
 
 

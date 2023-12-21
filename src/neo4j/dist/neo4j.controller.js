@@ -98,6 +98,9 @@ var Neo4jController = /** @class */ (function () {
     Neo4jController.prototype.asynrecommendRandomNoClicked = function (userId) {
         return this.neo4jService.recommendRandomNoClicked(userId);
     };
+    Neo4jController.prototype.asynfindProductsByCategoryOfProduct = function (productId) {
+        return this.neo4jService.findProductsByCategoryOfProduct(productId);
+    };
     __decorate([
         common_1.Post('createUser'),
         __param(0, common_1.Body())
@@ -134,6 +137,10 @@ var Neo4jController = /** @class */ (function () {
         common_1.Post('recommendRandomNoClicked'),
         __param(0, common_1.Body('userId'))
     ], Neo4jController.prototype, "asynrecommendRandomNoClicked");
+    __decorate([
+        common_1.Post('findProductsByCategoryOfProduct'),
+        __param(0, common_1.Body('productId'))
+    ], Neo4jController.prototype, "asynfindProductsByCategoryOfProduct");
     Neo4jController = __decorate([
         common_1.Controller('neo4j')
     ], Neo4jController);
