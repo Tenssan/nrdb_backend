@@ -219,6 +219,85 @@ async recommendFurnitureProducts(userId: string): Promise<any[]> {
 
 
 
+async recommendRandomNoClicked(userId: string): Promise<any[]> {
+  const session = this.driver.session();
+  try {
+     
+      const clickedProductsResult = await session.run(`
+      MATCH (u:User {id: $userId})-[:CLICKED_ON]->(clickedProduct:Product)
+      RETURN clickedProduct.id AS clickedProductId
+      `, 
+      { userId });
+
+      const clickedProductIds = clickedProductsResult.records.map(record => record.get('clickedProductId'));
+
+      
+      const unclickedProductsResult = await session.run(`
+      MATCH (product:Product)
+      WHERE NOT product.id IN $clickedProductIds
+      RETURN DISTINCT product
+      `, 
+      { clickedProductIds });
+
+      let unclickedProducts = unclickedProductsResult.records.map(record => record.get('product').properties);
+
+     
+      let recommendedProducts = [];
+      for (let i = 0; i < 3 && unclickedProducts.length > 0; i++) {
+          let randomIndex = Math.floor(Math.random() * unclickedProducts.length);
+          recommendedProducts.push(unclickedProducts[randomIndex]);
+          unclickedProducts.splice(randomIndex, 1); 
+      }
+
+      console.log(`Recommendations:`, recommendedProducts);
+      return recommendedProducts;
+      
+  } finally {
+      await session.close();
+  }
+}
+async findProductsByCategoryOfProduct(productId: string): Promise<any[]> {
+  const session = this.driver.session();
+  try {
+      
+      const categoryResult = await session.run(`
+      MATCH (p:Product {id: $productId})
+      RETURN p.category AS category
+      `, 
+      { productId });
+
+      
+      if (categoryResult.records.length === 0) {
+          console.log('Categoría del producto no encontrada.');
+          return [];
+      }
+      const category = categoryResult.records[0].get('category');
+
+      
+      const productsResult = await session.run(`
+      MATCH (p:Product)
+      WHERE p.category = $category AND p.id <> $productId
+      RETURN p
+      `, 
+      { productId, category });
+
+     
+      return productsResult.records.map(record => record.get('p').properties);
+  } catch (error) {
+      console.error('Error al obtener productos por categoría:', error);
+      throw error;
+  } finally {
+      await session.close();
+  }
+}
+
+
+
+
+
+
+
+
 
   
   }

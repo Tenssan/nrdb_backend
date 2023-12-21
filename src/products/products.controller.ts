@@ -44,5 +44,6 @@ export class ProductsController {
   async findAllByCategory(@Param('category') category: string) {
     return this.productsService.findAllByCategory(category);
   }
+  
 
 }
