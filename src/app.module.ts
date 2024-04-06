@@ -4,10 +4,13 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductsModule } from './products/products.module';
 import { UserModule } from './users/user.module';
-import { Neo4jModule } from './neo4j/neo4j.module'; 
+import { Neo4jModule } from './neo4j/neo4j.module';
+
+const MONGODBURI = 'urilab'
+
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb+srv://tenini:1234@nr-db-project.42lnxo9.mongodb.net/bdnr-documental', {
+    MongooseModule.forRoot(MONGODBURI, {
       
     }),
     ProductsModule,
